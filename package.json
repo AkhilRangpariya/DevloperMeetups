@@ -1,0 +1,19 @@
+{
+  "name": "devmeetself",
+  "version": "1.0.0",
+  "description": "connection plateform for developers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node.js",
+    "javascript",
+    "readct.js"
+  ],
+  "author": "Akhil",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
