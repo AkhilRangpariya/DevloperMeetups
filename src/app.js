@@ -1,4 +1,5 @@
 const express = require('express');
+require("./config/database");
 
 const app = express();
 
@@ -38,6 +39,9 @@ app.use('/', (req, res) => {
 app.use('/hello', (req, res) => {
     res.send('hello route data sent.');
 });
+
+// middlewared => before matching the exact routes they match ethe middle ware 
+// mached route => is call lingo also called middle ware
 
 app.use('/data', (req, res) => {
     console.log('test route data sent.')
