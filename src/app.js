@@ -142,6 +142,21 @@ app.get('/feed', async (req, res) => {
 })
 
 
+app.delete('/user', async (req, res) => {
+    const userId = req.body.userId;
+
+    try{
+        const user = await User.findByIdAndDelete(userId);
+        console.log('user found & deleted succesfully');
+        res.send('user deleted successfully');
+    }
+    catch{
+        console.log('user not found');
+        res.send.status(404).send('Something went worng | user not found');
+    }
+})
+
+
 // devtinder is a database, users is a collection, stored entrys are document
 app.get('/', (req, res) => {
     console.log('get call heppen');
