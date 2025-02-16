@@ -1,7 +1,8 @@
-const { MongoClient } = require("mongodb");
+// connection using direct mongodb
+// const { MongoClient } = require("mongodb");
 
 const url = 
-"mongodb+srv://akhilrangpariya9494:Jr6QpDq8OnUxYI5i@devmeetupsdbsystem.ogsp8.mongodb.net/?retryWrites=true&w=majority&appName=DevmeetupsDBSystem"
+"mongodb+srv://akhilrangpariya9494:Jr6QpDq8OnUxYI5i@devmeetupsdbsystem.ogsp8.mongodb.net/?retryWrites=true&w=majority&appName=DevmeetupsDBSystem";
 
 const client = new MongoClient(url);
 
@@ -12,6 +13,10 @@ async function main(){
     console.log('Connected successfully to server');
     const db = client.db(dbName);
     const collection = db.collection('documents');
+
+    const findResult = await collection.find({}).toArray();
+    console.log('Found document => ', findResult);
+
 
     return 'done.';
 

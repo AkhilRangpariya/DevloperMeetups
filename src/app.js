@@ -1,6 +1,5 @@
 const express = require('express');
-require("./config/database");
-
+const { connectDB } = require("./config/database");
 const app = express();
 
 // app.get('/user', (req, res) => {
@@ -20,30 +19,49 @@ const app = express();
 
 // //  this req.query => will return the extra add on parameters that pass in api calls
 // // for extra reoute or dynamic routes after main rout like '/user/:userId' => it's get using req.params (that after : colon && colon means it's dynamic routes) or '/user/:userId/:password/:name' 
-// app.get('/user', (req, res) => {
-//     console.log(req.query);
-//     res.send('user get data sent.');
+
+
+
+// // app.get('/user', (req, res) => {
+// //     console.log(req.query);
+// //     res.send('user get data sent.');
+// // })
+
+// // request handlers 
+// // any thigns after the slash all are matched with first route 
+// // so sequence of code are metter because of this any maching things 
+// app.use('/', (req, res) => {
+//     res.send('Hello form the server!');
+// });
+// // request handlers 
+
+
+// // '/hello/123' are matched 
+// // 'hello1233' are not match with below code  
+// app.use('/hello', (req, res) => {
+//     res.send('hello route data sent.');
+// });
+
+// // middlewared => before matching the exact routes they match ethe middle ware 
+// // mached route => is call lingo also called middle ware
+
+// app.use('/data', (req, res) => {
+//     console.log('test route data sent.')
 // })
 
-// request handlers 
-// any thigns after the slash all are matched with first route 
-// so sequence of code are metter because of this any maching things 
-app.use('/', (req, res) => {
-    res.send('Hello form the server!');
-});
-// request handlers 
+
+// app.listen(7777, () => {
+//     console.log("Server is succesfully listening,");
+// })
 
 
-// '/hello/123' are matched 
-// 'hello1233' are not match with below code  
-app.use('/hello', (req, res) => {
-    res.send('hello route data sent.');
-});
-
-// middlewared => before matching the exact routes they match ethe middle ware 
-// mached route => is call lingo also called middle ware
-
-app.use('/data', (req, res) => {
-    console.log('test route data sent.')
-})
-
+connectDB()
+    .then(() => {
+        console.log("Database connection establishede :smile:");
+        app.listen(7777, () => {
+            console.log("Server is succesfully listening,");
+        })
+    })
+    .catch(() => {
+        console.log("Database can not be connected!!");
+    })
