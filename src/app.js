@@ -1,5 +1,6 @@
 const express = require('express');
 const { connectDB } = require("./config/database");
+const { user } = require('./model/user');
 const app = express();
 
 // app.get('/user', (req, res) => {
@@ -54,7 +55,33 @@ const app = express();
 //     console.log("Server is succesfully listening,");
 // })
 
+app.post('/signup', async (req, res) => {
+    const userObj = {
+        firstName: 'ak',
+        lastName: 'R',
+        emailId: 'ak@gmail.com',
+        password: 'ak@1234',
+        gender: 'male', 
+    }
+    // creating a new instance of the user model
+    const userData = new user(userObj);
 
+    try{
+        await userData.save();
+        res.send("user added successfully!")
+    }
+    catch{
+        res.status(400).send("Error saving the user:")
+    }
+})
+
+// devtinder is a database, users is a collection, stored entrys are document
+
+
+app.get('/', (req, res) => {
+    console.log('get call heppen');
+    res.send('get call successfully called!');
+})
 connectDB()
     .then(() => {
         console.log("Database connection establishede :smile:");
