@@ -1,6 +1,6 @@
 const express = require('express');
 const { connectDB } = require("./config/database");
-const { user } = require('./model/user');
+const { user: User } = require('./model/user');
 const app = express();
 
 // app.get('/user', (req, res) => {
@@ -55,16 +55,45 @@ const app = express();
 //     console.log("Server is succesfully listening,");
 // })
 
+
+
+// MIDDLEWARE 
+// app.use(() => {
+//     // all there route apply this code and move forward
+// });
+// same as app.use(express.json());
+app.use(express.json());
+// json are convert it into the js object using above express.json() middle ware 
+
+
+
+// app.post('/signup', async (req, res) => {
+    // const userObj = {
+    //     firstName: 'ak',
+    //     lastName: 'R',
+    //     emailId: 'ak@gmail.com',
+    //     password: 'ak@1234',
+    //     gender: 'male', 
+    // }
+//     // creating a new instance of the user model
+//     const userData = new user(userObj);
+
+//     try{
+//         await userData.save();
+//         console.log("user added successfully!");
+//         res.send("user added successfully!");
+//     }
+//     catch{
+//         console.log("Error saving the user:");
+//         res.status(400).send("Error saving the user:");
+//     }
+// })
+
+// dynamic user data storing 
 app.post('/signup', async (req, res) => {
-    const userObj = {
-        firstName: 'ak',
-        lastName: 'R',
-        emailId: 'ak@gmail.com',
-        password: 'ak@1234',
-        gender: 'male', 
-    }
+
     // creating a new instance of the user model
-    const userData = new user(userObj);
+    const userData = new User(req.body);
 
     try{
         await userData.save();
@@ -77,9 +106,43 @@ app.post('/signup', async (req, res) => {
     }
 })
 
+app.get('/user', async (req, res) => {
+    const userEmail = req.body.emailId;
+
+    try{
+        const users = await User.find({emailId: userEmail});
+        if(users.length === 0){
+            console.log("no user fond");
+            res.status(404).send('User not found');
+        }
+        else{
+            res.send(users);
+        }
+    }
+    catch(err){
+        console.log('Something went worng');
+        res.status(404).send('Something went wrong');
+    }
+})
+app.get('/feed', async (req, res) => {
+    try{
+        const users = await User.find({});
+        if(users.length === 0){
+            console.log("no user fond");
+            res.status(404).send('User not found');
+        }
+        else{
+            res.send(users);
+        }
+    }
+    catch(err){
+        console.log('Something went worng');
+        res.status(404).send('Something went wrong');
+    }
+})
+
+
 // devtinder is a database, users is a collection, stored entrys are document
-
-
 app.get('/', (req, res) => {
     console.log('get call heppen');
     res.send('get call successfully called!');
