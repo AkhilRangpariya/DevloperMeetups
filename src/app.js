@@ -1,6 +1,7 @@
 const express = require('express');
 const { connectDB } = require("./config/database");
 const { user: User } = require('./model/user');
+const { ReturnDocument } = require('mongodb');
 const app = express();
 
 // app.get('/user', (req, res) => {
@@ -104,7 +105,7 @@ app.post('/signup', async (req, res) => {
         console.log("Error saving the user:");
         res.status(400).send("Error saving the user:");
     }
-})
+});
 
 app.get('/user', async (req, res) => {
     const userEmail = req.body.emailId;
@@ -123,7 +124,7 @@ app.get('/user', async (req, res) => {
         console.log('Something went worng');
         res.status(404).send('Something went wrong');
     }
-})
+});
 app.get('/feed', async (req, res) => {
     try{
         const users = await User.find({});
@@ -139,8 +140,7 @@ app.get('/feed', async (req, res) => {
         console.log('Something went worng');
         res.status(404).send('Something went wrong');
     }
-})
-
+});
 
 app.delete('/user', async (req, res) => {
     const userId = req.body.userId;
@@ -154,7 +154,19 @@ app.delete('/user', async (req, res) => {
         console.log('user not found');
         res.send.status(404).send('Something went worng | user not found');
     }
-})
+});
+
+app.patch('/user', async (req, res) => {
+    const userId = req.body.userId;
+    const data = req.body;
+    try{
+        const user = await User.findByIdAndUpdate({ _id: userId }, data, { ReturnDocument: " " })
+        res.send('User update successfully');
+    }
+    catch(err){
+        res.status(400).send('Something went wrong');   
+    }
+});
 
 
 // devtinder is a database, users is a collection, stored entrys are document

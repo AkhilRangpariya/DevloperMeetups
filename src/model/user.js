@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    firstNmae: {
+    firstName: {
         type: String
     },
     lastName: {
-        tupe: String       
+        type: String       
     },
     emailId: {
         type: String
@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     age: {
-        tupe: Number
+        type: Number
     },
     gendor: {
         type: String
