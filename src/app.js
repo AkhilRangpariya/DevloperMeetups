@@ -101,9 +101,9 @@ app.post('/signup', async (req, res) => {
         console.log("user added successfully!");
         res.send("user added successfully!");
     }
-    catch{
+    catch(err){
         console.log("Error saving the user:");
-        res.status(400).send("Error saving the user:");
+        res.status(400).send("Error occured when saving the user:" + err.message);
     }
 });
 
@@ -164,7 +164,7 @@ app.patch('/user', async (req, res) => {
         res.send('User update successfully');
     }
     catch(err){
-        res.status(400).send('Something went wrong');   
+        res.status(400).send('Update Failed'+ err.message );   
     }
 });
 
