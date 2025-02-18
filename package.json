@@ -11,7 +11,8 @@
     "javascript",
     "readct.js"
   ],
-  "author": "Akhil",
+  
+  "author": "AkhilRangpariya",
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.2",
