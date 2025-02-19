@@ -157,9 +157,25 @@ app.delete('/user', async (req, res) => {
 });
 
 app.patch('/user', async (req, res) => {
+    // const userId = req.params.userId;
     const userId = req.body.userId;
     const data = req.body;
     try{
+        
+            const Allowed_updated = ['userId', 'photoUrl', 'about', 'gender', 'age', 'skills'];
+        
+            const isUpadateAllowed = Object.keys(data).every((key) => Allowed_updated.includes(key));
+        
+            if(!isUpadateAllowed){
+                throw new Error('Update not allowed')
+                // throw err.send('Update not allowud')
+                // res.status(400).send("Updated field are not allowed ");
+            }
+
+            if(date?.skills.length > 10){
+                throw new Error('Not allowed more then 10 skills')
+            }
+            
         const user = await User.findByIdAndUpdate({ _id: userId }, data, { ReturnDocument: " ", runValidators: true, })
         res.send('User update successfully');
     }
