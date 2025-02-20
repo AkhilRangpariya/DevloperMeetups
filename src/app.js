@@ -3,6 +3,8 @@ const { connectDB } = require("./config/database");
 const { user: User } = require('./model/user');
 const { ReturnDocument } = require('mongodb');
 const app = express();
+const {validateSignUpData} = require('./utils/validation');
+const bcrypt = require('bcrypt');
 
 // app.get('/user', (req, res) => {
 //     console.log('get user route sent.');
@@ -93,9 +95,17 @@ app.use(express.json());
 // dynamic user data storing 
 app.post('/signup', async (req, res) => {
 
-    // creating a new instance of the user model
-    const userData = new User(req.body);
+    // validationn of req
+    validateSignUpData(req);
 
+    // Encription of the password 
+    const {firstName, lastName, emailId, password} = req.body;
+
+    const passwordHash = bcrypt.hash(password, 10);
+
+    // creating a new instance of the user model
+    const userData = new User({firstName, lastName, emailId, password: passwordHash});
+  
     try{
         await userData.save();
         console.log("user added successfully!");
@@ -106,6 +116,30 @@ app.post('/signup', async (req, res) => {
         res.status(400).send("Error occured when saving the user:" + err.message);
     }
 });
+
+app.post('/login', async (req, res) => {
+    try{
+        const {emailId, password} = req.body;
+
+        const user = await User.find({emailId: emailId});
+        if(!user){
+            throw new Error ('EmailId or Password are Invalid!');
+        }
+        
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if(isPasswordValid){
+            res.send('Login Successful!');
+        }
+        else{
+            throw new Error("EmailId or Password are Invalid!");    
+        }
+
+    }
+    catch{
+        res.status(400).send("ERROR: " + err.message);
+    }
+})
 
 app.get('/user', async (req, res) => {
     const userEmail = req.body.emailId;
