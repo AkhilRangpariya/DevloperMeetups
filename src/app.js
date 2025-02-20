@@ -5,6 +5,8 @@ const { ReturnDocument } = require('mongodb');
 const app = express();
 const {validateSignUpData} = require('./utils/validation');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 
 // app.get('/user', (req, res) => {
 //     console.log('get user route sent.');
@@ -66,6 +68,7 @@ const bcrypt = require('bcrypt');
 // });
 // same as app.use(express.json());
 app.use(express.json());
+app.use(cookieParser());
 // json are convert it into the js object using above express.json() middle ware 
 
 
@@ -129,6 +132,13 @@ app.post('/login', async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if(isPasswordValid){
+            // create a JWT token
+            const token = await jwt.sign({_id: user._Id}, "DEV@7meetup");
+            console.log(token);
+
+            // add token to cookie and send the response back to the user
+            res.cookie('token', token);
+
             res.send('Login Successful!');
         }
         else{
@@ -138,6 +148,34 @@ app.post('/login', async (req, res) => {
     }
     catch{
         res.status(400).send("ERROR: " + err.message);
+    }
+})
+
+app.get('/profile', async(req,res) => {
+    try{
+
+        const cookies = req.cookies;
+        
+        const {token} = cookies;
+
+        if(!token){
+            throw new Error('Please login again!');
+        }
+        // validate my token 
+        const decodedMessage = await jwt.verify(token, 'DEV@7meetup');
+        
+        const { _id } = decodedMessage;
+        
+        console.log(cookies);
+
+        const user = await User.find(_id);
+        if(!user){
+            throw new Error('Please login again! something get wrong')
+        }  
+        res.send(user);
+    }
+    catch(err){
+        res.status(400).send('Invalid tokens ' + err.message)
     }
 })
 
