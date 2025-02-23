@@ -7,6 +7,7 @@ const {validateSignUpData} = require('./utils/validation');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const { userAuth } = require('./middlewares/auth');
 
 // app.get('/user', (req, res) => {
 //     console.log('get user route sent.');
@@ -133,11 +134,13 @@ app.post('/login', async (req, res) => {
 
         if(isPasswordValid){
             // create a JWT token
-            const token = await jwt.sign({_id: user._Id}, "DEV@7meetup");
-            console.log(token);
+            // const token = await jwt.sign({_id: user._Id}, "DEV@7meetup", {expiresIn: '1d'});
+            // console.log(token);
+
+            const token = await user.getJWT();
 
             // add token to cookie and send the response back to the user
-            res.cookie('token', token);
+            res.cookie('token', token, {expires: new Date(Date.now() + 8 * 3600000)});
 
             res.send('Login Successful!');
         }
@@ -151,27 +154,28 @@ app.post('/login', async (req, res) => {
     }
 })
 
-app.get('/profile', async(req,res) => {
+app.get('/profile', userAuthm, async(req,res) => {
     try{
 
-        const cookies = req.cookies;
+        // const cookies = req.cookies;
         
-        const {token} = cookies;
+        // const {token} = cookies;
 
-        if(!token){
-            throw new Error('Please login again!');
-        }
-        // validate my token 
-        const decodedMessage = await jwt.verify(token, 'DEV@7meetup');
+        // if(!token){
+        //     throw new Error('Please login again!');
+        // }
+        // // validate my token 
+        // const decodedMessage = await jwt.verify(token, 'DEV@7meetup');
         
-        const { _id } = decodedMessage;
+        // const { _id } = decodedMessage;
         
-        console.log(cookies);
+        // console.log(cookies);
 
-        const user = await User.find(_id);
-        if(!user){
-            throw new Error('Please login again! something get wrong')
-        }  
+        // const user = await User.find(_id);
+        // if(!user){
+        //     throw new Error('Please login again! something get wrong')
+        // }
+        const user = req.user;  
         res.send(user);
     }
     catch(err){
