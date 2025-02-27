@@ -3,7 +3,7 @@ const { connectDB } = require("./config/database");
 const { user: User } = require('./model/user');
 const { ReturnDocument } = require('mongodb');
 const app = express();
-const {validateSignUpData} = require('./utils/validation');
+const { validateSignUpData } = require('./utils/validation');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
@@ -56,7 +56,7 @@ const { userAuth } = require('./middlewares/auth');
 //     console.log('test route data sent.')
 // })
 
- 
+
 // app.listen(7777, () => {
 //     console.log("Server is succesfully listening,");
 // })
@@ -75,13 +75,13 @@ app.use(cookieParser());
 
 
 // app.post('/signup', async (req, res) => {
-    // const userObj = {
-    //     firstName: 'ak',
-    //     lastName: 'R',
-    //     emailId: 'ak@gmail.com',
-    //     password: 'ak@1234',
-    //     gender: 'male', 
-    // }
+// const userObj = {
+//     firstName: 'ak',
+//     lastName: 'R',
+//     emailId: 'ak@gmail.com',
+//     password: 'ak@1234',
+//     gender: 'male', 
+// }
 //     // creating a new instance of the user model
 //     const userData = new user(userObj);
 
@@ -103,36 +103,36 @@ app.post('/signup', async (req, res) => {
     validateSignUpData(req);
 
     // Encription of the password 
-    const {firstName, lastName, emailId, password} = req.body;
+    const { firstName, lastName, emailId, password } = req.body;
 
     const passwordHash = bcrypt.hash(password, 10);
 
     // creating a new instance of the user model
-    const userData = new User({firstName, lastName, emailId, password: passwordHash});
-  
-    try{
+    const userData = new User({ firstName, lastName, emailId, password: passwordHash });
+
+    try {
         await userData.save();
         console.log("user added successfully!");
         res.send("user added successfully!");
     }
-    catch(err){
+    catch (err) {
         console.log("Error saving the user:");
         res.status(400).send("Error occured when saving the user:" + err.message);
     }
 });
 
 app.post('/login', async (req, res) => {
-    try{
-        const {emailId, password} = req.body;
+    try {
+        const { emailId, password } = req.body;
 
-        const user = await User.find({emailId: emailId});
-        if(!user){
-            throw new Error ('EmailId or Password are Invalid!');
+        const user = await User.find({ emailId: emailId });
+        if (!user) {
+            throw new Error('EmailId or Password are Invalid!');
         }
-        
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
-        if(isPasswordValid){
+        if (isPasswordValid) {
             // create a JWT token
             // const token = await jwt.sign({_id: user._Id}, "DEV@7meetup", {expiresIn: '1d'});
             // console.log(token);
@@ -140,25 +140,25 @@ app.post('/login', async (req, res) => {
             const token = await user.getJWT();
 
             // add token to cookie and send the response back to the user
-            res.cookie('token', token, {expires: new Date(Date.now() + 8 * 3600000)});
+            res.cookie('token', token, { expires: new Date(Date.now() + 8 * 3600000) });
 
             res.send('Login Successful!');
         }
-        else{
-            throw new Error("EmailId or Password are Invalid!");    
+        else {
+            throw new Error("EmailId or Password are Invalid!");
         }
 
     }
-    catch{
+    catch {
         res.status(400).send("ERROR: " + err.message);
     }
 })
 
-app.get('/profile', userAuthm, async(req,res) => {
-    try{
+app.get('/profile', userAuthm, async (req, res) => {
+    try {
 
         // const cookies = req.cookies;
-        
+
         // const {token} = cookies;
 
         // if(!token){
@@ -166,19 +166,19 @@ app.get('/profile', userAuthm, async(req,res) => {
         // }
         // // validate my token 
         // const decodedMessage = await jwt.verify(token, 'DEV@7meetup');
-        
+
         // const { _id } = decodedMessage;
-        
+
         // console.log(cookies);
 
         // const user = await User.find(_id);
         // if(!user){
         //     throw new Error('Please login again! something get wrong')
         // }
-        const user = req.user;  
+        const user = req.user;
         res.send(user);
     }
-    catch(err){
+    catch (err) {
         res.status(400).send('Invalid tokens ' + err.message)
     }
 })
@@ -186,33 +186,33 @@ app.get('/profile', userAuthm, async(req,res) => {
 app.get('/user', async (req, res) => {
     const userEmail = req.body.emailId;
 
-    try{
-        const users = await User.find({emailId: userEmail});
-        if(users.length === 0){
+    try {
+        const users = await User.find({ emailId: userEmail });
+        if (users.length === 0) {
             console.log("no user fond");
             res.status(404).send('User not found');
         }
-        else{
+        else {
             res.send(users);
         }
     }
-    catch(err){
+    catch (err) {
         console.log('Something went worng');
         res.status(404).send('Something went wrong');
     }
 });
 app.get('/feed', async (req, res) => {
-    try{
+    try {
         const users = await User.find({});
-        if(users.length === 0){
+        if (users.length === 0) {
             console.log("no user fond");
             res.status(404).send('User not found');
         }
-        else{
+        else {
             res.send(users);
         }
     }
-    catch(err){
+    catch (err) {
         console.log('Something went worng');
         res.status(404).send('Something went wrong');
     }
@@ -221,12 +221,12 @@ app.get('/feed', async (req, res) => {
 app.delete('/user', async (req, res) => {
     const userId = req.body.userId;
 
-    try{
+    try {
         const user = await User.findByIdAndDelete(userId);
         console.log('user found & deleted succesfully');
         res.send('user deleted successfully');
     }
-    catch{
+    catch {
         console.log('user not found');
         res.send.status(404).send('Something went worng | user not found');
     }
@@ -235,12 +235,12 @@ app.delete('/user', async (req, res) => {
 app.patch('/user', async (req, res) => {
     const userId = req.body.userId;
     const data = req.body;
-    try{
+    try {
         const user = await User.findByIdAndUpdate({ _id: userId }, data, { ReturnDocument: " ", runValidators: true, })
         res.send('User update successfully');
     }
-    catch(err){
-        res.status(400).send('Update Failed'+ err.message );   
+    catch (err) {
+        res.status(400).send('Update Failed' + err.message);
     }
 });
 

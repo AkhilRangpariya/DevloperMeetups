@@ -17,8 +17,8 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        validator(value){
-            if(validator.isEmail(value)){
+        validator(value) {
+            if (validator.isEmail(value)) {
                 throw new Error("Invalid email address: " + vlaue);
             }
         }
@@ -26,8 +26,8 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        validator(value){
-            if(!Validator.password(value)){
+        validator(value) {
+            if (!Validator.password(value)) {
                 throw new Error("Please enter a strong password:" + vlaue);
             }
         }
@@ -39,8 +39,8 @@ const userSchema = new mongoose.Schema({
     },
     gendor: {
         type: String,
-        validater(value){
-            if(!["male", "female", "others"].includes(value)){
+        validater(value) {
+            if (!["male", "female", "others"].includes(value)) {
                 throw new Error("Gender data is not valid");
             }
         }
@@ -48,8 +48,8 @@ const userSchema = new mongoose.Schema({
     photoUrl: {
         type: String,
         defalut: "https://geographyandyou.image/user-profile.com",
-        validator(value){
-            if(!Validator.isURL(value)){
+        validator(value) {
+            if (!Validator.isURL(value)) {
                 throw new Error("Invalid Photo URL:" + vlaue);
             }
         }
@@ -62,16 +62,16 @@ const userSchema = new mongoose.Schema({
         type: [String],
     }
 },
-{
-    timestamps: true,
-}
+    {
+        timestamps: true,
+    }
 )
 
-userSchema.method.getJWT = async function() {
+userSchema.method.getJWT = async function () {
     const user = this;
 
-    const token = await jwt.sign({_id: user._Id}, "DEV@7meetup", {expiresIn: '1d'});
-    
+    const token = await jwt.sign({ _id: user._Id }, "DEV@7meetup", { expiresIn: '1d' });
+
     return token;
 }
 const user = mongoose.model("user", userSchema);
