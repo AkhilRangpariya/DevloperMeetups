@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/user')
 
+// authentication of the token middleware
 const userAuth = async (req, res, next) => {
     // read teh token from the req cookies  
 
@@ -12,6 +13,7 @@ const userAuth = async (req, res, next) => {
 
         const decodedObj = await jwt.verify(token, 'DEV@7meetup');
 
+        // in decodedObj = {_id: '...', isa:'...'}   _id that we hidde and isa is added by jwt
         const { _id } = decodedObj;
 
         const user = await User.find(_id);
@@ -22,7 +24,7 @@ const userAuth = async (req, res, next) => {
         req.user = user;
         next();
     }
-    catch {
+    catch(err) {
         res.status(404).send('ERROR', err.message);
     }
 }
