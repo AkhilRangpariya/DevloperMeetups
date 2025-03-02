@@ -1,14 +1,14 @@
 // connection using direct mongodb
 // const { MongoClient } = require("mongodb");
 
-const url = 
-"mongodb+srv://akhilrangpariya9494:Jr6QpDq8OnUxYI5i@devmeetupsdbsystem.ogsp8.mongodb.net/?retryWrites=true&w=majority&appName=DevmeetupsDBSystem";
+const url =
+    "mongodb+srv://akhilrangpariya9494:Jr6QpDq8OnUxYI5i@devmeetupsdbsystem.ogsp8.mongodb.net/?retryWrites=true&w=majority&appName=DevmeetupsDBSystem";
 
 const client = new MongoClient(url);
 
 const dbName = 'DeevMeetUps';
 
-async function main(){
+async function main() {
     await client.connect();
     console.log('Connected successfully to server');
     const db = client.db(dbName);
