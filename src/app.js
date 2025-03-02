@@ -68,7 +68,9 @@ const { userAuth } = require('./middlewares/auth');
 //     // all there route apply this code and move forward
 // });
 // same as app.use(express.json());
+// get data convert in to normal json to object data so we can use 
 app.use(express.json());
+// for read a cookies string need to first parst it and you can read it (use middleware)
 app.use(cookieParser());
 // json are convert it into the js object using above express.json() middle ware 
 
@@ -130,13 +132,17 @@ app.post('/login', async (req, res) => {
             throw new Error('EmailId or Password are Invalid!');
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        // /offload the logic of make hase comparision
+        // const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await user.validatePassword(password);
 
         if (isPasswordValid) {
-            // create a JWT token
+            // TODO: create a JWT token
+            // hidding the user id inside the jwt token 
             // const token = await jwt.sign({_id: user._Id}, "DEV@7meetup", {expiresIn: '1d'});
             // console.log(token);
 
+            // offload the logic of creation of jwt token in schema methods 
             const token = await user.getJWT();
 
             // add token to cookie and send the response back to the user
@@ -154,8 +160,10 @@ app.post('/login', async (req, res) => {
     }
 })
 
-app.get('/profile', userAuthm, async (req, res) => {
+app.get('/profile', userAuth, async (req, res) => {
     try {
+        // TODO: validate the cookies
+        // need library for read the cookies (called cookies parcer)
 
         // const cookies = req.cookies;
 
@@ -164,7 +172,7 @@ app.get('/profile', userAuthm, async (req, res) => {
         // if(!token){
         //     throw new Error('Please login again!');
         // }
-        // // validate my token 
+        // // validate(verify) my token 
         // const decodedMessage = await jwt.verify(token, 'DEV@7meetup');
 
         // const { _id } = decodedMessage;
@@ -175,12 +183,18 @@ app.get('/profile', userAuthm, async (req, res) => {
         // if(!user){
         //     throw new Error('Please login again! something get wrong')
         // }
+
+        // req.user is alrady passed from the userAuth middleware function 
         const user = req.user;
         res.send(user);
     }
     catch (err) {
         res.status(400).send('Invalid tokens ' + err.message)
     }
+})
+
+app.post('/sendconnectionrequest', userAuth, (req, res) => {
+    req.send("Sending a connection request");
 })
 
 app.get('/user', async (req, res) => {
@@ -201,6 +215,7 @@ app.get('/user', async (req, res) => {
         res.status(404).send('Something went wrong');
     }
 });
+
 app.get('/feed', async (req, res) => {
     try {
         const users = await User.find({});
@@ -232,11 +247,12 @@ app.delete('/user', async (req, res) => {
     }
 });
 
+// not available field in schema then it's ignored by the mongodb
 app.patch('/user', async (req, res) => {
     const userId = req.body.userId;
     const data = req.body;
     try {
-        const user = await User.findByIdAndUpdate({ _id: userId }, data, { ReturnDocument: " ", runValidators: true, })
+        const user = await User.findByIdAndUpdate({ _id: userId }, data, { ReturnDocument: "before", runValidators: true, })
         res.send('User update successfully');
     }
     catch (err) {
@@ -250,9 +266,10 @@ app.get('/', (req, res) => {
     console.log('get call heppen');
     res.send('get call successfully called!');
 })
+
 connectDB()
     .then(() => {
-        console.log("Database connection establishede :smile:");
+        console.log("Database connection established");
         app.listen(7777, () => {
             console.log("Server is succesfully listening,");
         })
